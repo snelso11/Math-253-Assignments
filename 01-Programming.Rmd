@@ -4,8 +4,8 @@
 
 ##Task 1
 ```{r}
-install.packages("mosaicData",repos="http://cran.rstudio.com/")
-library(mosaicData)
+install.packages("mosaic",repos="http://cran.rstudio.com/")
+library(mosaic)
 ```
 
 
