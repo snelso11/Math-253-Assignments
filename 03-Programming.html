@@ -147,8 +147,7 @@ Test_data &lt;- College [test_indices, 1:ncol(College)]</code></pre>
 </div>
 <div id="task-4" class="section level2">
 <h2>Task 4</h2>
-<pre class="r"><code>Yield_mod1 &lt;- lm(Yield ~ Top10perc + Outstate + Expend, data = Train_data)
-Yield_mod2 &lt;- lm(Yield ~ Top10perc + Outstate + Expend, data = Test_data)</code></pre>
+<pre class="r"><code>Yield_mod1 &lt;- lm(Yield ~ Top10perc + Outstate + Expend, data = Train_data)</code></pre>
 </div>
 <div id="task-5" class="section level2">
 <h2>Task 5</h2>
@@ -156,15 +155,17 @@ Yield_mod2 &lt;- lm(Yield ~ Top10perc + Outstate + Expend, data = Test_data)</co
 fhat_train &lt;- predict(Yield_mod1, newdata = Train_data)
 MSE_train &lt;- mean((Y_train - fhat_train)^2)
 print(MSE_train)</code></pre>
-<pre><code>## [1] 0.0130262</code></pre>
+<pre><code>## [1] 0.014545</code></pre>
 </div>
 <div id="task-6" class="section level2">
 <h2>Task 6</h2>
 <pre class="r"><code>Y_test &lt;- Test_data$Yield
-fhat_test &lt;- predict(Yield_mod2, newdata = Train_data)
-MSE_test &lt;- mean((Y_test - fhat_test)^2)</code></pre>
-<pre><code>## Warning in Y_test - fhat_test: longer object length is not a multiple of
-## shorter object length</code></pre>
+fhat_test &lt;- predict(Yield_mod1, newdata = Test_data)
+MSE_test &lt;- mean((Y_test - fhat_test)^2)
+print(MSE_test)</code></pre>
+<pre><code>## [1] 0.01382435</code></pre>
+<pre class="r"><code>print(MSE_train/MSE_test)</code></pre>
+<pre><code>## [1] 1.052129</code></pre>
 </div>
 <div id="test-statements" class="section level2">
 <h2>Test statements</h2>

@@ -26,7 +26,6 @@ Test_data <- College [test_indices, 1:ncol(College)]
 ## Task 4
 ```{r}
 Yield_mod1 <- lm(Yield ~ Top10perc + Outstate + Expend, data = Train_data)
-Yield_mod2 <- lm(Yield ~ Top10perc + Outstate + Expend, data = Test_data)
 ```
 ## Task 5
 ```{r}
@@ -38,8 +37,10 @@ print(MSE_train)
 ## Task 6
 ```{r}
 Y_test <- Test_data$Yield
-fhat_test <- predict(Yield_mod2, newdata = Train_data)
+fhat_test <- predict(Yield_mod1, newdata = Test_data)
 MSE_test <- mean((Y_test - fhat_test)^2)
+print(MSE_test)
+print(MSE_train/MSE_test)
 ```
 ## Test statements
 
