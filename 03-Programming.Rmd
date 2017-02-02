@@ -1,9 +1,46 @@
 # In-Class Programming Activity, Day 3
 
-Your work goes here ...
+## Spencer Nelson
 
+## Task 1
+```{r}
+install.packages("ISLR",repos="http://cran.rstudio.com/")
+library(ISLR)
+data(College, package = "ISLR")
+```
+## Task 2
+```{r}
+College$Yield <- NA
+College$Yield <- (College$Enroll/College$Accept)
+```
 
+## Task 3
+```{r}
+all_indices <- (1:nrow(College))
+train_indices <- sample(all_indices, 200, replace = FALSE, prob = NULL)
+test_indices <- setdiff(all_indices,train_indices)
+Train_data <- College [train_indices, 1:ncol(College)]
+Test_data <- College [test_indices, 1:ncol(College)]
+```
 
+## Task 4
+```{r}
+Yield_mod1 <- lm(Yield ~ Top10perc + Outstate + Expend, data = Train_data)
+Yield_mod2 <- lm(Yield ~ Top10perc + Outstate + Expend, data = Test_data)
+```
+## Task 5
+```{r}
+Y_train <- Train_data$Yield
+fhat_train <- predict(Yield_mod1, newdata = Train_data)
+MSE_train <- mean((Y_train - fhat_train)^2)
+print(MSE_train)
+```
+## Task 6
+```{r}
+Y_test <- Test_data$Yield
+fhat_test <- predict(Yield_mod2, newdata = Train_data)
+MSE_test <- mean((Y_test - fhat_test)^2)
+```
 ## Test statements
 
 ```{r}
