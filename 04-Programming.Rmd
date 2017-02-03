@@ -1,9 +1,47 @@
 # In-Class Programming Activity, Day 4
 
-Your work goes here ...
+## Spencer Nelson
 
-
-
+## Task 1
+```{r}
+par(pty = "s")
+plot(1, xlim = c(0,100), ylim = c(0,100), type = "n", ylab = "y axis", xlab = "x axis")
+```
+## Task 2
+```{r}
+par(pty = "s")
+plot(1, xlim = c(0,100), ylim = c(0,100), type = "n", ylab= "y axis", xlab = "x axis")
+x1 <- c(20,20)
+y1 <- c(20,80)
+lines(x1,y1, col = "green", lwd = 3)
+x2 <- c(80,80)
+y2 <- c(80,20)
+lines(x2,y2, col = "yellow", lwd = 5)
+lines(y1,x1, col = "purple", lwd = 8)
+lines(y2,x2, col = "orange", lwd = 2)
+```
+## Task 3
+```{r}
+par(pty = "s")
+plot(1, xlim = c(0,100), ylim = c(0,100), type = "n", xlab = "x axis", ylab = "y axis")
+seq1 <- seq(from = 0.0, to = 2.0*pi, length.out = 50)
+x3 <- 20*sin(seq1)+50
+y3 <- 20*cos(seq1)+60
+lines(x3,y3, col = "greenyellow", lwd = 10)
+```
+## Task 4
+```{r}
+par(pty = "s")
+plot(1, xlim = c(0,100), ylim = c(0,100), type = "n", xaxt = "n", yaxt = "n", xlab = "x axis", ylab = "y axis")
+seq1 <- seq(from = 0.0, to = 2.0*pi, length.out = 50)
+x4 <- 20*abs(sin(seq1))*sin(seq1)+50
+y4 <- 20*abs(sin(seq1))*cos(seq1)+60
+lines(x4,y4, col = "blue", lwd = 5)
+```
+## Task 5
+```{r}
+#Integrated into the previous tasks
+```
 ## Test statements
 
 ```{r}
