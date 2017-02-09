@@ -1,2 +1,202 @@
-# Topic 1 Exercises
 
+# Topic 1 Exercises
+## Spencer Nelson 
+## Statistical Computing and Machine Learning
+
+
+## ISL 2.4.1
+```{r}
+#a
+#A flexible model will perform better because the large sample size, it's not likely to be overfitted, especially with having a small number of predictors. The flexible model will also reduce bias.
+#b
+#This is the opposite situation of (a.), so an inflexible model will perform better because overfitting is likely with such a small sample size.
+#c
+#With very non-linear relationships between predictors and responses, it makes the most sense to use a flexible model, because that is the best way to capture the non-linearity of the data, as an inflexible model is restrained to modeling more linear relationships. 
+#d
+#With a large variance in error term, using an inflexible model makes the most sense because it will capture less of the  noise, than the a flexible model would. 
+```
+
+
+##ISL 2.4.3
+```{r}
+#a 
+#I can't currently get the image to upload but I believe this is the correct code: 
+#![Graph of Train and Test MSE, Variance, Squared Bias, and Bayes Error](C:\Users\snelso11\Desktop\assignment.png)
+
+```
+```{r}
+#b
+#The irreducible error (Bayes error) is a constant (it's irreducible), therefore it is simply a striaght parallel line. The test MSE decreases as flexibility increases, initially, because when there is little data, we can overfit the model with the training data, but then increases with accuracy as the flexibility increase. The training MSE consistently declines as flexibility increases because its fitting the training data more accuratly as there is greater flexbility. The squared bias also decreases consistently because flexible models work to reduce the squared bias by accounting for more predictors and fewer assumptions. The variance is consistently increasing because it is a measure of the replacability of training data to the test data, therefore, as flexbility increases (and the model is fitted), then the variance grows as the data becomes less replacable without major change in variance. 
+```
+## ISL 2.4.6
+```{r}
+#A nonparametric test is a test that does not take into account distribution, or rather doesn't assume that the data follows a specific kind of distribution pattern, while parametric tests make assumptions aboutnormally distributed data. The benefits of a parametric approach are the ability to make predicitions about data isn a quick and simple way work well with smaller amounts of data for training, and doesn't capture as much noise from variance errors. Noting this, parametric testing also is constrained to linearity and do not allow for complexity and can also fit data more poorly in practice. In contrast, nonparametric testing is flexible and makes no assumptions about the data (so it works better with large datasets) and can produce more complex models. It also has the disadvantages of requiring more training data to work properly and can overfit the training data.  
+```
+## ISL 2.4.8
+```{r}
+#a
+install.packages("ISLR",repos="http://cran.rstudio.com/")
+library(ISLR)
+download.file("http://www-bcf.usc.edu/~gareth/ISL/College.csv",destfile="College.csv")
+college_filename <- "/home/local/MAC/snelso11/Math-253-Assignment/College.csv"
+college <- read.csv(college_filename)
+```
+```{r}
+#b
+#omit "X" variable of names
+rownames<-college[,1]
+college<-college[,-1]
+```
+
+```{r}
+#c
+#i
+#summary of data
+summary(college)
+```
+
+```{r}
+#c
+#ii
+#create a matrix of scatterplots
+A<- college[,1:10]
+pairs(A[,1:10])
+```
+
+```{r}
+#c
+#iii
+boxplot(college$Outstate~college$Private)
+```
+
+```{r}
+#c
+#iv
+#create variable "Elite"
+Elite =rep ("No",nrow(college ))
+Elite [college$Top10perc >50]=" Yes"
+Elite =as.factor (Elite)
+college =data.frame(college, Elite)
+summary(college)
+boxplot(college$Outstate~college$Elite)
+```
+
+```{r}
+#c
+#v
+#creating histograms with various bins
+par(mfrow=c(2,2))
+hist(college$Outstate, breaks = seq(min(college$Outstate),max(college$Outstate), l = 15), main = "Histogram of Out of State Tuition", xlab = "Out of State Tuition")
+hist(college$Top10perc, breaks = seq(min(college$Top10perc),max(college$Top10perc), l = 5), main = "Histogram of % of Top 10%", xlab= "% Students in Top 10% of Class")
+hist(college$Grad.Rate, breaks = seq(min(college$Grad.Rate),max(college$Grad.Rate), l = 3),main = "Histogram of Grad Rate", xlab = "Graduation Rate")
+hist(college$PhD, breaks = seq(min(college$PhD), max(college$PhD), l = 10), main = "Histogram of % of Professors with PhD", xlab = "% of Professors with PhD")
+```
+
+```{r}
+#c
+#vi
+#exploratory data analysis
+levels(college$Private)
+levels(college$Elite)
+plot(college$Enroll~college$Apps)
+plot(college$Accept~college$Top10perc)
+# This exploratory analysis found the values of the categorical variables "Private" and "Elite". The first scatterplot shows the relationship between number of applications and number of students enrolled. Unsurprisingly, those with more applications tend to have more students enroll (likely larger universities). The second scatterplot shows the relationship between percentage of students at the college who were in the top 10% of their high school graduating class, and the number of students accepted. This scatterplot shows that the data for both is concentrated in lower values of both. 
+```
+## ISL 2.4.9
+```{r}
+#a
+#The qualitative indicators are "origin", "name", and "horsepower". The quantiative indicators are "mpg", "cylinders", "displacement", "weight", "acceleration", and "year".
+```
+
+```{r}
+#b
+#These are the ranges of each quantitative variable
+range(Auto$mpg)
+range(Auto$cylinders)
+range(Auto$displacement)
+range(Auto$weight)
+range(Auto$acceleration)
+range(Auto$year)
+```
+```{r}
+#c
+#these are the means and standard deviations of each quantiative variable
+mean(Auto$mpg)
+mean(Auto$cylinders)
+mean(Auto$displacement)
+mean(Auto$weight)
+mean(Auto$acceleration)
+mean(Auto$year)
+sd(Auto$mpg)
+sd(Auto$cylinders)
+sd(Auto$displacement)
+sd(Auto$weight)
+sd(Auto$acceleration)
+sd(Auto$year)
+```
+
+```{r}
+#d
+#these are the means and standard deviations of a subset of the quantitative variables
+Auto_small <- Auto[-10:-85,]
+mean(Auto_small$mpg)
+mean(Auto_small$cylinders)
+mean(Auto_small$displacement)
+mean(Auto_small$weight)
+mean(Auto_small$acceleration)
+mean(Auto_small$year)
+sd(Auto_small$mpg)
+sd(Auto_small$cylinders)
+sd(Auto_small$displacement)
+sd(Auto_small$weight)
+sd(Auto_small$acceleration)
+sd(Auto_small$year)
+```
+
+```{r}
+#e
+#Scatter plots, exploratory data anlysis
+plot(Auto$acceleration~Auto$mpg)
+plot(Auto$weight~Auto$acceleration)
+# The first scatter plot is the relationship between mpg and acceleration. It doesn't look as though there is a distinct trend. The second scatterplot is the relationship between acceleration and weight, and it looks as though there may be a slight relationship between higher accelerations and lower weights of cars.
+```
+
+```{r}
+#f
+plot(Auto$mpg~Auto$cylinders)
+plot(Auto$mpg~Auto$displacement)
+plot(Auto$mpg~Auto$weight)
+plot(Auto$mpg~Auto$acceleration)
+plot(Auto$mpg~Auto$year)
+#These plots investigate possible indicators of for the variable mpg. It's possible that cylinders may be an indicator as it appears that there is a loose relationship between higher cylinders and lower mpg. Displacement and weight both may also be indicators, having indirect relationships with mpg. 
+
+```
+
+## ISL 2.4.2
+```{r}
+#a
+#This scenario is a regression scenario because we are looking to find salary (quantitative variable). In this scenario we are more interested in inference because we are trying to find what factors affect salary and understand the relationship, rather than predict a value. In the sencario n is 500 and p is 3 (profit, number of employeers, and industry).
+#b
+#This scenario is a classification scenario because we are looking to find a specific, categorical outcome (success vs. failure). In ths scenario, we are more interested in prediction because we are looking to find a specific outcome from this test. In this scenario, n is 20 and p is 13 ( price charged, marketing budget, competition price, and 10 other variables).
+#c
+#This scenario is a regression because we are using quantiative indicators to predict a quantiative response. In this scenario, we are more concerned with prediction. In the sceniaro, n is 52 (the number of weeks in a year), and p is 3 (% change in US, German, and UK markets).
+```
+
+## ISL 2.4.7
+```{r}
+#a
+#Computing euclidean distance for each observation to (0,0,0)
+sqrt(0^2+3^2+0^2)
+sqrt(2^2+0^2+0^2)
+sqrt(0^2+1^2+3^2)
+sqrt(0^2+1^2+2^2)
+sqrt((-1)^2+0^2+1^2)
+sqrt(1^2+1^2+1^2)
+#b
+#Prediction for K = 1 is GREEN because we are taking into account only the closest observation to the test point (0,0,0), which is Observation 5, which is GREEN.
+#c
+#Prediction for K =3 is RED because we are taking into account the three closest observations to the test point (0,0,0), which are observations 5,6, and 2. 2/3 of these observations are red and 1/3 are green so our prediction for K = 3 is RED. 
+#d 
+#If the Bayes decision boundary in the problem is highly nonlinear, we could expect the bbest value of K to be small, because as K would increase, the boundary would become increasingly inflexible/linear.
+
+```
