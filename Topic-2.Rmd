@@ -1,2 +1,215 @@
 # Topic 2 Exercises: Linear Regression
 
+##Spencer Nelson
+
+## ISL 3.6.1 Libraries (Computing Assignment)
+```{r}
+library(MASS)
+library(ISLR)
+```
+## ISL 3.6.2 Simple Linear Regressions (Computing Assignment)
+```{r}
+names(Boston)
+lm.fit=lm(medv~lstat,data=Boston)
+attach(Boston)
+lm.fit=lm(medv~lstat)#"data = " as an alternative to attach
+lm.fit
+summary(lm.fit)
+names(lm.fit)
+coef(lm.fit)
+confint(lm.fit)
+predict(lm.fit, data.frame(lstat = (c(5,10,15))), interval = "confidence")
+predict(lm.fit, data.frame(lstat = (c(5,10,15))), interval = "prediction")
+plot(lstat,medv, data = Boston)
+abline(lm.fit)
+```
+```{r}
+plot.new()
+abline(lm.fit, lwd = 3)
+abline(lm.fit, lwd = 3, col = "red")
+plot(lstat,medv, pch = 20)
+plot(lstat,medv, pch = "+")
+plot(1:20,1:20,pch = 1:20)
+```
+
+```{r}
+par(nfrow = c(2,2))
+plot(lm.fit)
+```
+```{r}
+plot(predict(lm.fit), residuals(lm.fit))
+plot(predict(lm.fit), rstudent(lm.fit))
+```
+```{r}
+plot(hatvalues(lm.fit))
+which.max(hatvalues(lm.fit))
+```
+## ISL 3.6.3 Multiple Linear Regression (Computing Assignment)
+```{r}
+lm.fit = lm(medv~lstat+age,data=Boston)
+summary(lm.fit)
+```
+```{r}
+lm.fit = lm(medv~.,data=Boston)
+summary(lm.fit)
+```
+```{r}
+library(car)
+vif(lm.fit)
+```
+
+```{r}
+lm.fit1 = lm(medv~.-age,data=Boston)
+summary(lm.fit1)
+lm.fit1 = update(lm.fit,~.-age)
+```
+
+
+
+##ISL 3.6.4 Interaction Terms (Computing Assignment)
+
+```{r}
+summary(lm(medv~lstat*age,data=Boston))
+```
+##ISL 3.6.5 Non-linear Transformations of the Predictors (Computing Assignment)
+```{r}
+lm.fit2 = lm(medv~lstat+I(lstat^2))
+summary(lm.fit2)
+```
+```{r}
+lm.fit = lm(medv~lstat)
+anova(lm.fit,lm.fit2)
+```
+```{r}
+par(mfrow=c(2,2))
+plot(lm.fit2)
+```
+```{r}
+lm.fit5 = lm(medv~poly(lstat,5))
+summary(lm.fit5)
+```
+```{r}
+summary(lm(medv~log(rm),data=Boston))
+```
+## 3.6.6 ISL Qualitative Predictors (Computing Assignment)
+```{r}
+names(Carseats)
+```
+
+```{r}
+lm.fit = lm(Sales~.+Income:Advertising+Price:Age,data=Carseats)
+summary(lm.fit)
+```
+```{r}
+contrasts(Carseats$ShelveLoc)
+```
+## ISL 3.6.7 Writing Functions (Computing Assignment)
+```{r}
+LoadLibraries = function(){
+  library(ISLR)
+  library(MASS)
+  print("The libraries have been loaded.")
+}
+LoadLibraries
+LoadLibraries()
+```
+
+## ISL 3.6.13 (Computing Assignment 2)
+```{r}
+#A
+set.seed(1)
+x<- rnorm(100)
+#B
+eps <- rnorm(100, sd = sqrt(.25))#mean of 0, variance of .25
+#C
+y<- -1+.5*x+eps
+length(y) #length of vector y
+#The values of B0 and B1 in this model are -1 and .5, respectively.
+#D
+plot(x,y)
+#I notice that there appears to be a positive linear relationship between x and y.
+#E
+lm.fit13<- lm(y~x)
+summary(lm.fit13)
+#This appears as though the t test has resulted in statistical signifcance, with a very low p value. This means that we would reject the null hypothesis.
+#F
+plot(x,y)
+abline(lm.fit13, col = "green")
+abline(-1,.5, col = "blue")
+legend(0,0,"Models",fill = NULL, pch = 3)
+#G
+lm.fit13_2<- lm(y~x+I(x^2))
+summary(lm.fit13_2)
+#It appears as though the quadratic (and adding flexibility) does not improve the model fit becasue the testing yields a fairly high p-value for x^@, indicating that that variable does not carry statistical significance and only complicates the model without providing a better prediction. 
+#H - repeating A-F with less noise
+set.seed(1)
+x<- rnorm(100)
+eps<- rnorm(100, sd = .1)
+y<- -1+.5*x+eps
+plot(x,y)
+lm.fit13_less<- lm(y~x)
+summary(lm.fit13_less)
+legend(0,0,"Models",fill = NULL, pch = 3)
+abline(lm.fit13_less, col = "tomato")
+abline(-1,.5, col = "navy")
+#The lines are closer because of such small variation in noise, as the models even better fit the data (because the sd is smaller)
+#I - repeat A-F with more noise in the data
+set.seed(1)
+x<- rnorm(100)
+eps<- rnorm(100, sd = .8)
+y<- -1+.5*x+eps
+plot(x,y)
+lm.fit13_more<- lm(y~x)
+summary(lm.fit13_more)
+legend(0,1,"Models",fill = NULL, pch = 3)
+abline(lm.fit13_more, col = "orange")
+abline(-1,.5, col = "purple")
+#Because of larger amounts of noise, the models are less good at fitting the data and the lines are further apart(because the sd and variance are larger).
+#J
+confint(lm.fit13)
+confint(lm.fit13_less)
+confint(lm.fit13_more)
+#The confidence intervals reveal that the interval is centered around .5, which makes sense given our distribution between 0 and 1. It is also notable that in the model with greater variance, the interval is larger, while in the model with less variance the interval is smaller. Presumably, if we kept reducing the variance, we would find have high confidence that that the true mean of our data would be around 0.5. 
+```
+
+
+## ISL Theory Question 1
+```{r}
+#The authors make the statements "For these fomulas to be strictly valid, we need to assume that the errors for each observation are uncorrleated with the common variance." They then note, that "this is clearly not true in Figure 3.1, but the formula still turns out to be a good approximation." Figure 3.1 (which I've attached below) is a scatter plot of advertising data with the documented least squares fit for regression of variable sales onto TV. The grey lines from the points to the line of best fit (a simple linear regression) represent the error. While the regression line ends up being "a good approximation", the authors are certainly correct in saying that the the assumption is untrue for the figure, as it is quite evident that there is a drastic increase in errors from the regression line and that they are at least somewhat correlated with the common variance, as the the variable TV (x variable) increases, and the y outputs are less predictable (in reality) and a less good fit for the model. 
+```
+![Figure 3.1 from the text.](/home/local/MAC/snelso11/Math-253-Assignment/Topic-2.png)
+## ISL Theory Question 2
+```{r}
+#On p. 77 the authors state, “In this case we cannot even fit the multiple regression models using least squares …."
+#--------------------------------------------------------
+#In that discussion, the author is describing an instance in which p (the number of predictors) is greater than n (the number of cases). The author is correct in making the claim that twe cannot fit the multiple regression models using least squares because there are more variables to estimate than there observations to estimate them from. A better way to do this would be to use forward selection, where one adds variables to the model individually. 
+```
+
+## ISL 3.7.3 (Theory Question 3)
+```{r}
+#A 
+# The correct answer is iii (for xied IQ and GPA, males earn more than females, provided a high enough GPA). We know this because the information provided allows us to deduce the least squares line, which would be: 50+20GPA+.07IQ+35Gender+(.01GPA*IQ)-(10GPA*Gender). With this, we can then plug in our values for gender (0 for males, and 1 for females), to deduce two different lines. These would be reduced to 50+20GPA+.07IQ+01GPA*IQ and 85+10GPA+.07IQ+.01GPA*IQ, for males and females respectively. This means then that the starting salary is higher for males as long as their GPA is above a 3.5, because the GPA increase is weighted so much more heavily for men (at 20*GPA versus 10*GPA for women). So, with 50+20GPA and 85+10GPA being the two different terms holding GPA and IQ constant, it is clear that 20GPA =35*10GPA, so that reduces to when male GPA is at 3.5 or higher, the model predicts they will make more than females, however, if it is lower, females will make more.
+#B The predicted salaray of a female with IQ of 110 and a GPA of 4.0 is $137,100. We can determine this by using the information given and creating our regression line, for women (which I've done in the last question). This line is 85+10*GPA+.07*IQ+.01*GPA*IQ. Filling in this observation for the model would result in the following: 85+10*4+.07*110+.01*4*110. Let's calculate this:
+```
+```{r}
+85+10*4+.07*110+.01*4*110
+```
+```{r}
+#B (continued)
+# The predicted starting salary for a female with a 4.0 GPA and an IQ of 110 is $137,100.
+# C. The answer is False. Just because the coefficient of the GPA/IQ interaction term is small, does not mean that there is little of an effect, it is just a modeling of the relationship between the two variables, not how significant it is. To determine this, we would have to run a hypothesis test (such as an F test or t test) and then examine the P-value to determine statistical significance. 
+```
+
+## ISL 3.7.4 (Theory Question 4)
+```{r}
+#A
+# If the true relationship between X and Y is linear, and there is a linear regression model and a cubic regression model, we could expect that the training RSS would be lower in the linear model. Because we are given the information that the true relationship is linear, it is likely that a linear regression would best fit the model, and thefore have a lower RSS than a cubic regression.
+#B
+# If the true relationship between X and Y is linear, and we are analyzing testing (rather than training data), for regression models, we can estimate (although it is difficult without knowing the test data) that there is an overfitting in modeling with a cubic regression, because the true relationship is linear. 
+
+#C
+# If the true relationship is not linear (but it is unkown how far from), we can estimate that a cubic regression model will yield a lower RSS for training data. It would follow the training observations more closely, to increase flexibility in the model and this would reduce RSS, to an extent  (since we know it is not linear).
+#D
+# If the true relationship is not linear (but it is unknown how far from), we would have a very difficult time estimating whether a linear or cubic regression model will yield a lower RSS for the testing data. This is because we don't know if the test data fits a linear or cubic model better. If it fits linear better, it is like that linear models will conclude a lower RSS, and the opposite is true for if the test data is cubic. This dichotomy exists beecause of the tradeoff that happens with flexibility (and inflexibility) of models where one either sacrifices variance or bias in their model, and with this information we are unable to fully conclude which is better, and inflexibile (linear) or flexible (cubic) model.
+```
+
