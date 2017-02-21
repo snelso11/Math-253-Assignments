@@ -1,9 +1,45 @@
 # In-Class Programming Activity, Day 7
 
-Your work goes here ...
+##Task 1
+```{r}
+vals<-rexp(10, rate = 1/100)
+vals
+```
+##Task 2
+```{r}
+test<-dexp(vals)
+test200<-sum(log10(test))
+test200
+```
+##Task 3
+```{r}
+LL_exp<-function(rate){
+    vals<-rexp(10,rate = rate)
+  test<-dexp(vals)
+  test200<-sum(log10(test))
+  test200
+}
+```
+##Task 4
+```{r}
+rates<- seq (from = 1/200, to = 1/50, length.out = 50)
+rates
+```
+##Task 5
+```{r}
+results<-sapply(rates,LL_exp)
+results
+```
 
-
-
+##Task 6
+```{r}
+plot(results,1/rates)
+```
+##Automating the search
+```{r}
+exp_results <- optimize(LL_exp, lower = 1/200, upper = 1/50, maximum = TRUE)
+exp_results
+```
 ## Test statements
 
 ```{r}
