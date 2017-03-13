@@ -1,9 +1,46 @@
 # In-Class Programming Activity, Day 11
 
-Your work goes here ...
+##Matrices and their inverses
+```{r}
+Sigma <- cbind(c(1.0,-0.7), c(-0.7,1.0))
+Sigma_inv<-solve(Sigma)
+test_inverse<-Sigma%*%Sigma_inv
+```
+##Matrix Compositions
+```{r}
+A<- chol(Sigma)
+transpose<-t(A)
+t(A)%*%A
+Sigma
+```
+##Orthogonal Vectors and Matrices
+```{r}
+x1<-rnorm(10)
+x2<-rnorm(10)
+x1<-cbind(rnorm(10))
+x2<-cbind(rnorm(10))
+t(x1)%*%x2
+X<-cbind(x1,x2)
+(t(X)%*%X)/nrow(X) #covariance matrix
+w1<-rnorm(10000)
+w2<-rnorm(10000)
+W<-cbind(w1,w2)
+W_cov<-(t(W)%*%W)/nrow(W)#covariance matrix
 
-
-
+```
+##Generating correlated random vectors
+```{r}
+A_inv<-chol(Sigma_inv)
+Y<-X%*%A
+Y_cov<-(t(Y)%*%Y)/nrow(Y)
+Y_cov
+Y<-W%*%A
+Y_cov<-(t(Y)%*%Y)/nrow(Y)
+Y_cov
+#Difference between Sigma and cov of Y is similar to 1/sqrt(n)
+plot<-plot(Y[,1],Y[,2], col = rgb(0,0,0,.05))
+plot
+```
 ## Test statements
 
 ```{r}
