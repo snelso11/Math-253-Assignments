@@ -1,7 +1,85 @@
 # In-Class Programming Activity, Day 12
 
-Your work goes here ...
-
+##Spencer Nelson
+##Generating simulated data
+```{r}
+n_cases<-100
+red_mean<-c(1,0)
+green_mean<-c(0,-1)
+blue_mean<-c(-1,1)
+covar_red<-cbind(c(3,-1.7),c(-1.7,1))
+covar_blue<-cbind(c(2,1.5),c(1.5,3))
+One<- cbind(c(rnorm(n_cases,mean=0,sd=1)),c(rnorm(n_cases,mean=0,sd=1)))
+Two<-cbind(c(rnorm(n_cases,mean=0,sd=1)),c(rnorm(n_cases,mean=0,sd=1)))
+Three<- cbind(c(rnorm(n_cases,mean=0,sd=1)),c(rnorm(n_cases,mean=0,sd=1)))
+Red<-One%*%(chol(covar_red))
+Green<-Two%*%(chol(covar_red))
+Blue<-Three%*%(chol(covar_blue))
+Red<-t(t(Red)+red_mean)
+Green<-t(t(Green)+green_mean)
+Blue<-t(t(Blue)+blue_mean)
+Red<-data.frame(Red[,1],Red[,2], "red", stringsAsFactors = FALSE)
+Blue<-data.frame(Blue[,1],Blue[,2],"blue", stringsAsFactors = FALSE)
+Green<-data.frame(Green[,1],Green[,2],"green", stringsAsFactors = FALSE)
+names(Red)[names(Red)=="Red...1."] <- "x"
+names(Red)[names(Red)=="Red...2."] <- "y"
+names(Red)[names(Red)=="X.red."] <- "class"
+names(Blue)<-names(Green)<-names(Red)
+Same_sigma<-rbind(Red,Green)
+Different_sigma<-rbind(Red,Blue)
+```
+##LDA and QDA
+```{r}
+library(MASS)
+mod_LDA_one<-lda(class~x+y,data = Same_sigma)
+test_LDA_one<-predict(mod_LDA_one,newdata = Same_sigma)
+mod_QDA_one<-qda(class~x+y,data=Same_sigma)
+test_QDA_one<-predict(mod_QDA_one,newdata=Same_sigma)
+```
+##Confusion matrices
+```{r}
+table(Same_sigma$class,test_LDA_one$class)
+table(Same_sigma$class,test_QDA_one$class)
+##The confusion matrix has the same performance for both the LDA and the QDA
+test_LDA_two<-predict(mod_LDA_one,newdata = Different_sigma)
+test_QDA_two<-predict(mod_QDA_one,newdata=Different_sigma)
+table(Different_sigma$class,test_LDA_two$class)
+table(Different_sigma$class,test_QDA_two$class)
+##The confusion matrices perform the same for both LDA and QDA
+```
+##Bigger n
+```{r}
+n_cases<-10000
+One<- cbind(c(rnorm(n_cases,mean=0,sd=1)),c(rnorm(n_cases,mean=0,sd=1)))
+Two<-cbind(c(rnorm(n_cases,mean=0,sd=1)),c(rnorm(n_cases,mean=0,sd=1)))
+Three<- cbind(c(rnorm(n_cases,mean=0,sd=1)),c(rnorm(n_cases,mean=0,sd=1)))
+Red<-One%*%(chol(covar_red))
+Green<-Two%*%(chol(covar_red))
+Blue<-Three%*%(chol(covar_blue))
+Red<-t(t(Red)+red_mean)
+Green<-t(t(Green)+green_mean)
+Blue<-t(t(Blue)+blue_mean)
+Red<-data.frame(Red[,1],Red[,2], "red", stringsAsFactors = FALSE)
+Blue<-data.frame(Blue[,1],Blue[,2],"blue", stringsAsFactors = FALSE)
+Green<-data.frame(Green[,1],Green[,2],"green", stringsAsFactors = FALSE)
+names(Red)[names(Red)=="Red...1."] <- "x"
+names(Red)[names(Red)=="Red...2."] <- "y"
+names(Red)[names(Red)=="X.red."] <- "class"
+names(Blue)<-names(Green)<-names(Red)
+Same_sigma<-rbind(Red,Green)
+Different_sigma<-rbind(Red,Blue)
+mod_LDA_one<-lda(class~x+y,data = Same_sigma)
+test_LDA_one<-predict(mod_LDA_one,newdata = Same_sigma)
+mod_QDA_one<-qda(class~x+y,data=Same_sigma)
+test_QDA_one<-predict(mod_QDA_one,newdata=Same_sigma)
+test_LDA_two<-predict(mod_LDA_one,newdata = Different_sigma)
+test_QDA_two<-predict(mod_QDA_one,newdata=Different_sigma)
+table(Same_sigma$class,test_LDA_one$class)
+table(Same_sigma$class,test_QDA_one$class)
+table(Different_sigma$class,test_LDA_two$class)
+table(Different_sigma$class,test_QDA_two$class)
+##With a larger n, for Same_sigma, the QDA and LDA perform the same. For Different_sigma, the QDA is slightly better.
+```
 
 
 ## Test statements
