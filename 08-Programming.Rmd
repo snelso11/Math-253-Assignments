@@ -1,9 +1,50 @@
 # In-Class Programming Activity, Day 8
+##Spencer Nelson
 
-Your work goes here ...
+##Task 1
+```{r}
+x<-runif(100, min = 20, max = 70)
+y<- 5+3*x+2*rnorm(100)
+My_data<-data.frame(x,y)
+```
+##Task 2
+```{r}
+plot(My_data)
+```
+##Task 3
+```{r}
+x<-runif(100, min = 20, max = 70)
+y<- 5+3*x+2*rnorm(100)
+LL_line<- function(params){
+  m<-params[1]
+  b<-params[2]
+  sigma<-params[3]
+  sum(log(dnorm(y-(m*x+b),sd=sigma)))
+}
+testA<- c(3,5,2)
+testB<-c(4,1,10)
+best<-optim(testA,LL_line,control = list(fnscale = -1))
+```
+##Task 2 - Taxicab fare structure
+```{r}
+load("~/Math-253-Assignment/Taxi_trips.rda")
+taxi_likelihood<- function(params){
+  m<-params[1]
+  b<-params[2]
+  sigma<-params[3]
+  sum(log(dexp(Taxi_trips$fare_amount-(m*Taxi_trips$trip_distance + b),rate=sigma)+.00001))
+}
+best<-optim(testA,taxi_likelihood,control = list(fnscale = -1))
+per_mile <- best$par[1]
+base_fare <- best$par[2]
+params<- best$par[3]
+waiting_fare <- with(Taxi_trips,
+                     fare_amount - (base_fare + per_mile*trip_distance))
+plot(fare_amount~trip_distance, data=Taxi_trips)
+abline(base_fare,per_mile, col = "red")
 
 
-
+```
 ## Test statements
 
 ```{r}
