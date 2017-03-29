@@ -1,2 +1,185 @@
 # Topic 4 Exercises: Classification
+#Spencer Nelson
 
+##Programming Assingment 4.7.11
+###Creating binary variable "mpg01" (I've called it mpg_binary)
+```{r}
+library(ISLR)
+attach(Auto)
+mpg_binary <- rep(0, length(mpg), data=Auto)
+mpg_binary[mpg > median(mpg)] <- 1
+Auto <- data.frame(Auto, mpg_binary)
+```
+###b. Exploring Data Graphically
+```{r}
+boxplot(cylinders ~ mpg_binary, data = Auto, main = "Cylinders vs mpg_binary")
+boxplot(displacement ~ mpg_binary, data = Auto, main = "Displacement vs mpg_binary")
+boxplot(horsepower ~ mpg_binary, data = Auto, main = "Horsepower vs mpg_binary")
+boxplot(weight ~ mpg_binary, data = Auto, main = "Weight vs mpg_binary")
+boxplot(acceleration ~ mpg_binary, data = Auto, main = "Acceleration vs mpg_binary")
+boxplot(year ~ mpg_binary, data = Auto, main = "Year vs mpg_binary")
+#After exploring the relationships of variables with mpg_binary, it appears as though there may be a large difference between the above and below median values (0 and 1 of mpg_binary) in the clustering of "cylinders", "displacement", "horsepower", and "weight", with slightly smaller differences in means for "year" and "acceleration".
+```
+###C. Spliting the data into a training set and test set
+```{r}
+train <- (year %% 2 == 0)
+training_data <- Auto[train, ]
+testing_data <- Auto[!train, ]
+mpg_binary_testing <- mpg_binary[!train]
+```
+###D. LDA
+```{r}
+library(MASS)
+lda_mod <- lda(mpg_binary ~ cylinders + weight + displacement + horsepower, data = Auto, subset = train)
+pred_lda<-predict(lda_mod, data=testing_data)
+mean(pred_lda$class != mpg_binary_testing)
+#The test error of the model is .3761905 or 37.62%.
+```
+###E. QDA
+```{r}
+qda_mod <- qda(mpg_binary ~ cylinders + weight + displacement + horsepower, data = Auto, subset = train)
+pred_qda<-predict(qda_mod, data=testing_data)
+mean(pred_qda$class != mpg_binary_testing)
+#The test error of the model is .3857 or 38.57%.
+```
+###F. Logistic Regression
+```{r}
+glm_mod <- glm(mpg_binary ~ cylinders + weight + displacement + horsepower, data = Auto, family = binomial, subset = train)
+summary(glm_mod)
+prob_glm <- predict(glm_mod, testing_data, type = "response")
+pred_glm <- rep(0, length(prob_glm))
+pred_glm[prob_glm > 0.5] <- 1
+mean(pred_glm != mpg_binary_testing)
+#The test error of the GLM model is .1209 or 12.08%.
+```
+###G. KNN
+```{r}
+library(class)
+training_knn <- cbind(cylinders, weight, displacement, horsepower)[train, ]
+testing_knn <- cbind(cylinders, weight, displacement, horsepower)[!train, ]
+training_mpg_binary <- mpg_binary[train]
+set.seed(1)
+pred_knn <- knn(training_knn, testing_knn, training_mpg_binary, k = 1)
+mean(pred_knn != mpg_binary_testing)
+#The test error for KNN is .1538 or 15.38% for K = 1.
+prediction_knn<-function(training = training_knn,testing = testing_knn, training_var = training_mpg_binary, k, testing_var = mpg_binary_testing){
+  knn_val<-knn(training_knn,testing_knn,training_mpg_binary, k)
+  mean_error<-mean(knn_val != mpg_binary_testing)
+  return(mean_error)
+}
+prediction_knn(k=1)
+prediction_knn(k=10)
+prediction_knn(k=20)
+prediction_knn(k=30)
+prediction_knn(k=40)
+prediction_knn(k=50)
+prediction_knn(k=60)
+prediction_knn(k=70)
+prediction_knn(k=80)
+prediction_knn(k=90)
+prediction_knn(k=100)
+prediction_knn(k=110)
+prediction_knn(k=120)
+prediction_knn(k=130)
+prediction_knn(k=140)
+prediction_knn(k=150)
+#It appears to be best between k=30 and k=40
+prediction_knn(k=30)
+prediction_knn(k=40)
+prediction_knn(k=35)
+prediction_knn(k=33)
+prediction_knn(k=32)
+prediction_knn(k=26)
+#So far, k=26 seems to have the lowest mean error and return the best results at around .1319 or 13.19%.
+```
+##Programming Assignment: 4.7.13
+```{r}
+library(MASS)
+#predict whether a suburb has a crime rate above or below median.
+#use logistic regression, LDA, and KNN in the subsets
+attach(Boston)
+crime <- rep(0, length(crim), data=Boston)#make a replication of values "x" to prserve zero to the length
+crime[crim > median(crim)] <- 1 #assigns one as value for when "crim" is greater than median of crim variable, within the variable "crime"
+Boston <- data.frame(Boston, crime) #assigns this new variable to the dataframe
+train <- 1:(length(crim)/2) #half of the cases
+test <- (length(crim) / 2 + 1):length(crim) #entries that from one after training cases to the end
+Boston_train <- Boston[train, ]#training data for Boston
+Boston_test <- Boston[test, ]#testing data for Boston
+crime_testing <- crime[test] #testing data for crime
+
+boxplot(zn ~ crime, data = Boston, main = "ZN vs CRIME") 
+boxplot(indus ~ crime, data = Boston, main = "INDUS vs CRIME")
+boxplot(chas ~ crime, data = Boston, main = "CHAS vs CRIME")
+boxplot(nox ~ crime, data = Boston, main = "NOX vs CRIME") 
+boxplot(rm ~ crime, data = Boston, main = "RM vs CRIME")
+boxplot(age ~ crime, data = Boston, main = "AGE vs CRIME")
+boxplot(dis ~ crime, data = Boston, main = "DIS vs CRIME")
+boxplot(rad ~ crime, data = Boston, main = "RAD vs CRIME")
+boxplot(tax ~ crime, data = Boston, main = "TAX vs CRIME") 
+boxplot(ptratio ~ crime, data = Boston, main = "PTRATIO vs CRIME")
+boxplot(black ~ crime, data = Boston, main = "BLACK vs CRIME")
+boxplot(lstat ~ crime, data = Boston, main = "LSTAT vs CRIME")
+boxplot(medv ~ crime, data = Boston, main = "MEDV vs CRIME")
+boxplot(crim ~ crime, data = Boston, main = "CRIM vs CRIME") 
+
+#The variables that seemed to show the greatest differences were "crim" (per capita crime rate by town), "rad" (index of accessibility to radial highways), and "ptratio" (pupil-teach ratio by town). Therefore, these will be the variables in my logistic regression.
+glm_mod <- glm(crime ~ crim + ptratio + rad, data = Boston, family = binomial, subset = train)
+prob_glm <- predict(glm_mod, Boston_test, type = "response")
+predict_glm <- rep(0, length(prob_glm))
+predict_glm[prob_glm > 0.5] <- 1
+table(predict_glm, crime_testing)
+mean(predict_glm != crime_testing)
+#The logistic regresssion and generalized linear model have a mean test error rate of .003952569 or .40%.
+lda_mod <- lda(crime ~ crim + ptratio + rad, data = Boston, subset = train)
+predict_lda <- predict(lda_mod, Boston_test)
+table(predict_lda$class, crime_testing)
+mean(predict_lda$class != crime_testing)
+#The linear dimensional analysis has a mean test error rate of .1106719 or 11.07%.
+train_knn_Boston <- cbind(zn, indus, chas, nox, rm, age, dis, rad, tax, ptratio, black, lstat, medv)[train, ]
+test_knn_Boston <- cbind(zn, indus, chas, nox, rm, age, dis, rad, tax, ptratio, black, lstat, medv)[test, ]
+train_crime <- crime[train]
+set.seed(1)
+prediction_knn_Boston<-function(training = train_knn_Boston,testing = test_knn_Boston, training_var = train_crime, k, testing_var = crime_testing){
+  knn_val<-knn(train_knn_Boston, test_knn_Boston,train_crime, k)
+  mean_error<-mean(knn_val != crime_testing)
+  return(mean_error)
+}
+prediction_knn_Boston(k=1)
+prediction_knn_Boston(k=10)
+prediction_knn_Boston(k=100)
+prediction_knn_Boston(k=50)
+prediction_knn_Boston(k=25)
+prediction_knn_Boston(k=15)
+prediction_knn_Boston(k=12)
+prediction_knn_Boston(k=13)
+prediction_knn_Boston(k=14)
+prediction_knn_Boston(k=9)
+prediction_knn_Boston(k=8)
+prediction_knn_Boston(k=7)
+prediction_knn_Boston(k=6)
+#The lowest knn error estimate is when k=9 or k=10, and it is .1106719 or 11.07%.
+```
+##Theory Assignment: 4.7.1
+```{r}
+#Q1. Using a little bit of algebra, prove that (4.2) is equivalent to (4.3). In other words, the logistic function representation and logit representation for the logistic regression model are equivalent.
+#In 4.2 we are given: p(X)=e^(β0+β1X)/(1+e^(β0+β1X)) and in 4.3 we are given p(X)/(1−p(X))=e^(β0+β1X)
+    #To solve, we need to firstly subtract each side from one on 4.2 to get: 1-p(X)=1-(e^(β0+β1X)/(1+e^(β0+β1X))). Integrating the 1 into the numerator and the denomonator leaves us with 1/(1+e^(β0+β1X))=1-p(x), when simplified. Then we would cross multiply to get 1/(1-p(X))=1+e^(β0+β1X).
+#Next, we would multiply both sides by p(X) to get p(X)/(1-p(X)) = p(X) * (1+e^(β0+β1X)). p(X) can be subbed out for our original equation which would give us: p(X)/(1-p(X)) = (e^(β0+β1X)/(1+e^(β0+β1X)))*(1+e^(β0+β1X)). This can be reduced to p(X)/(1-p(X)) = e^(β0+β1X. And that is the same is the same as 4.3.
+```
+##Theory Assignment: 4.7.8
+```{r}
+#Q8. Suppose that we take a data set, divide it into equally-sized training and test sets, and the try out two different classification procedures. First we use logistic regression and get an error rate of 20% on the training data and 30% on the test data. Next we use 1-nearest neighbors (i.e. K=1) and get an average error rate (averaged over both test and training data sets) of 18%. Based on these results, which method should we prefer to use for classification of new observations? Why?
+  #In the instance where k=1, we are gauranteed a training error of zero, because it is only being trained on one data and is therefore impossible to make an error on the training data. Since we know that the average over both training and testing is 18%, that means that (0+X)/2=18, which gives us a value of 36% error rate for the testing data. Noting this, we should prefer the LOGISTIC REGRESSION because it has a lower error rate than KNN when k=1. 
+```
+##Theory Assignment: 4.7.9
+```{r}
+#Q9. This problem has to do with odds.
+
+#(a) On average, what fraction of people with an odds of 0.37 of defaulting on their credit card payment will in fact default?
+.37/(1+.37) #odds would be an addition
+#This is around 27% of people with an odd of .37 of defaulting on their credit card, while actually default. 
+
+#(b) Suppose that an individual has a 16% chance of defaulting on her credit card payment. What are the odds that she will default?
+.16/(1-.16) #chance is a subtraction
+#If one has a 16% chance of defaulting on their credit card payment, there is a ~ 19% odd that she will actually default.
+```
