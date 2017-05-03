@@ -1,2 +1,90 @@
 # Topic 6 Exercises: Selecting Model Terms
 
+##Spencer Nelson
+
+###Theory 6.8.1
+```{r}
+#A. The smallest training RSS with k predicotrs would be the best subset method because it utilizes the methods within forward stepwise and backward stepwise selection.
+
+#B. The smallest test RSS would likely be the best subset approach for the same reasons it would the smallest train RSS; however, it is possible that any of the slection methods could have the smallest test RSS, depending on the testing data.
+
+#C. 
+  #i. TRUE. In k+1 variable model, forward stepwise selection would add one new predictor.
+  #ii. TRUE. In k+1 variable model, backward stepwise selection would delete one predictor.
+  #iii. FALSE. There isn't a direct relationship between the forward and backward stepwise selections.
+  #iv. FALSE. Same answer as iii. - no direct relationship between the selection methods.
+  #v. FALSE. Model with k+1 predictors is obtained through all models, and does not necessarily mean that it contains all predictors for the k-variable model. 
+```
+
+###Theory 6.8.2
+```{r}
+#A. iii. or "Less flexible and hence will give improved predicition accuracy when its increase in bias is less than its decrease in variance" is the correct answer for the what the lasso is, relative to least squares. This is because The lasso is more inflexible.
+
+#B. iii., is the correct answer for the ridge regression, relative to least squares. This is because the ridge regression is less flexible, like the lasso. 
+
+#C ii. or "More flexible and hence will give improved prediction accuracy when its increase in variance is less than its decrease in bias", is the correct answer for what non-linear methods are, relative to least squares. This is becuase non-linear methods are more flexible.
+
+```
+
+###Computing 6.8.9
+```{r}
+#A.
+library(ISLR)
+data(College)
+training_index<-sample(1:nrow(College), size = nrow(College)*.5)
+train<-College[training_index,]
+test<-College[-training_index,]
+#B. Fit a linear model using least squares, and report the test error
+names(College)
+linear_mod<-lm(Apps~., data=train)
+predicted_values<-predict(linear_mod, data=test)
+mean_error<- mean((test$Apps - predicted_values)^2)
+mean_error
+#C. Fit a ridge regression model with lambda chosen via cross validation
+library(glmnet)
+training_ridge<-model.matrix(Apps~.,data=train)
+ridge_regression<-cv.glmnet(training_ridge,train$Apps,alpha=0)
+ridge_regression$lambda.min
+test_ridge<-model.matrix(Apps~.,data=test)
+predicted_ridge<-predict(ridge_regression, newx = test_ridge, s = ridge_regression$lambda.min)
+mean_error_ridge<-mean((test$Apps - predicted_ridge)^2)
+mean_error_ridge
+#D. Fit a lasso regression model
+training_lasso<- training_ridge
+lasso_model<- cv.glmnet(training_lasso,train$Apps,alpha = 1)
+lasso_model$lambda.min
+test_lasso<- test_ridge
+predicted_lasso<-predict(lasso_model, newx = test_lasso, s = lasso_model$lambda.min)
+mean_error_lasso<-mean((test$Apps - predicted_lasso)^2)
+mean_error_lasso
+#E.Fit a PCR model
+library(pls)
+pcr_mod<-pcr(Apps~., data = train, validation = "CV")
+validationplot(pcr_mod, val.type = "MSEP")
+predicted_pcr<-predict(pcr_mod, newdata = test, ncomp = 10)
+mean_error_pcr<-mean((test$Apps - predicted_pcr)^2)
+mean_error_pcr
+#F. fit a PLS model
+pls_mod<-plsr(Apps~., data = train, scale = TRUE, validation = "CV")
+validationplot(pls_mod,val.type = "MSEP")
+predicted_pls<-predict(pls_mod, test, ncomp = 10)
+mean_error_pls<-mean((test$Apps - predicted_pls)^2)
+mean_error_pls
+#G. Comment on results obtained
+print(paste("linear model mean error: ", mean_error))
+print(paste("ridge regression mean error: ", mean_error_ridge))
+print(paste("lasso model mean error: ", mean_error_lasso))
+print(paste("pcr model mean error: ", mean_error_pcr))
+print(paste("pls model mean error: ", mean_error_pls))
+test_average<-mean((test$Apps))
+mean_error_test<-mean((test_average - test$Apps)^2)
+ridge_r2<- 1 - mean_error_ridge/mean_error_test
+lasso_r2<- 1- mean_error_lasso/mean_error_test
+pcr_r2<- 1- mean_error_pcr/mean_error_test
+pls_r2<- 1 - mean_error_pls/mean_error_test
+print(paste("r2 for ridge regression: ", ridge_r2))
+print(paste("r2 for lasso model: ", lasso_r2))
+print(paste("r2 for pcr model: ", pcr_r2))
+print(paste("r2 for pls model: ", pls_r2))
+#After calculating the r^2 values for each of the models, I believe that these models are quite similar. 
+```
