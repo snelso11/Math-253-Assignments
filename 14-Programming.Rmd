@@ -1,6 +1,42 @@
 # In-Class Programming Activity, Day 14
+# Spencer Nelson
+```{r}
+library(glmnet)
+```
+```{r}
+GenCont<-read.csv("http://tiny.cc/dcf/GenCont.csv")
+compare_ols_ridge <- function(responses, predictors, lambda=1){
+    sets<- sample(1:nrow(GenCont), .5*nrow(GenCont))
+    train<-GenCont[sets, ]
+    test<-GenCont[-sets, ]
+    lm_mod<- lm(Phenotypes ~ ., data = train)
+    predicted_lm<-predict(lm_mod, data = train)
+    ols_in<- mean((train$Phenotypes - predicted_lm)^2)
+    
+    
+    training_ridge<-model.matrix(Phenotypes~.,data=train)
+    ridge_regression<-glmnet(training_ridge,train$Phenotypes,alpha=0, lambda = 1)
+    ridge_regression$lambda.min
+    test_ridge<-model.matrix(Phenotypes~.,data=test)
+    predicted_ridge<-predict(ridge_regression, newx = training_ridge, s = ridge_regression$lambda.min)
+    ridge_in<-mean((train$Phenotypes - predicted_ridge)^2)
+    
+    
+    predicted_lm_test<-predict(lm_mod,data = test)
+    ols_out <- mean((test$Phenotypes - predicted_lm_test)^2)
+        
+    
+    predicted_ridge_test<- predict(ridge_regression, newx = test_ridge, s = ridge_regression$lambda.min)
+    ridge_out<- mean((test$Phenotypes - predicted_ridge_test)^2)
+    
+    vect1 <- cbind(ols_in,ridge_in,ols_out,ridge_out,lambda)
+    return(vect1) 
+}
 
-Your work goes here ...
+Shrink_results<-compare_ols_ridge()
+Shrink_results
+
+```
 
 
 
