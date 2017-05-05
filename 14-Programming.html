@@ -154,13 +154,16 @@ compare_ols_ridge &lt;- function(responses, predictors, lambda=1){
     ridge_out&lt;- mean((test$Phenotypes - predicted_ridge_test)^2)
     
     vect1 &lt;- cbind(ols_in,ridge_in,ols_out,ridge_out,lambda)
+    names(vect1)&lt;- c(&quot;ols_in&quot;, &quot;ridge_in&quot;, &quot;ols_out&quot;, &quot;ridge_out&quot;, &quot;lambda&quot;)
     return(vect1) 
 }
 
 Shrink_results&lt;-compare_ols_ridge()
 Shrink_results</code></pre>
-<pre><code>##        ols_in ridge_in  ols_out ridge_out lambda
-## [1,] 1.007049 1.102284 3.685757    1.2984      1</code></pre>
+<pre><code>##         ols_in ridge_in  ols_out ridge_out lambda
+## [1,] 0.8882595 1.025885 3.545733  1.214177      1
+## attr(,&quot;names&quot;)
+## [1] &quot;ols_in&quot;    &quot;ridge_in&quot;  &quot;ols_out&quot;   &quot;ridge_out&quot; &quot;lambda&quot;</code></pre>
 <div id="test-statements" class="section level2">
 <h2>Test statements</h2>
 <pre class="r"><code>scoreActivity::score253(14)</code></pre>
@@ -173,10 +176,10 @@ Shrink_results</code></pre>
 ## passed: &quot;responses&quot; %in% names(formals(compare_ols_ridge))
 ## passed: &quot;predictors&quot; %in% names(formals(compare_ols_ridge))
 ## passed: &quot;lambda&quot; %in% names(formals(compare_ols_ridge))
-## FAILED: &quot;ols_in&quot; %in% names(Shrink_results)
-## FAILED: &quot;ridge_out&quot; %in% names(Shrink_results)
-## ERROR when running  check(about(1, pm = 0.01), Shrink_results[[&quot;lambda&quot;]])
-## ERROR when running  check(about(3.5, pm = 1.5), Shrink_results[[&quot;ols_out&quot;]])</code></pre>
+## passed: &quot;ols_in&quot; %in% names(Shrink_results)
+## passed: &quot;ridge_out&quot; %in% names(Shrink_results)
+## passed: Shrink_results[[&quot;lambda&quot;]]
+## passed: Shrink_results[[&quot;ols_out&quot;]]</code></pre>
 </div>
 </div>
 

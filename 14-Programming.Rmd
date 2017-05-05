@@ -30,6 +30,7 @@ compare_ols_ridge <- function(responses, predictors, lambda=1){
     ridge_out<- mean((test$Phenotypes - predicted_ridge_test)^2)
     
     vect1 <- cbind(ols_in,ridge_in,ols_out,ridge_out,lambda)
+    names(vect1)<- c("ols_in", "ridge_in", "ols_out", "ridge_out", "lambda")
     return(vect1) 
 }
 
