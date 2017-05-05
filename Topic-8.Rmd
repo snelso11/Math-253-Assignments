@@ -1,2 +1,121 @@
 # Topic 8 Exercises: Tree-based models
 
+##Spencer Nelson
+
+###Theory 8.4.1
+```{r}
+{par(xpd=NA)
+plot(NA,NA, type =  "n", xlim = c(-1,1), ylim = c(-1,1), xlab = "x", ylab = "y")
+lines(x=c(-1,1), y = c(.1,.1))
+text(x = 1.2, y = .1, labels = c("t1"), col = "blue")
+lines(x = c(-1,1), y = c(-.35,-.35))
+text(x= 1.2, y = -.35, labels = c("t2"), col = "blue")
+lines(x = c(.55,.55), y = c(-1,-.35))
+text(x = .55,y=-1.2, labels = c("t3"), col = "blue")
+lines(x = c(.05,.05), y = c(.1,1))
+text(x = .05, y = 1.2, labels = c("t4"), col = "blue")
+lines(x = c(-.7,-.7), y = c(.1,1))
+text(x = -.7, y = 1.2, labels = c("t5"), col = "blue")
+
+text(x = -.9, y = .55, labels = c("Region 1"), col = "red")
+text(x = -.4, y = .55, labels = c("Region 2"), col = "red")
+text(x = .55, y = .55, labels = c("Region 3"), col = "red")
+text(x = 0, y = -.2, labels = c("Region 4"), col = "red")
+text(x = -.55, y = -.65, labels = c("Region 5"), col = "red")
+text(x = .75, y = -.65, labels = c("Region 6"), col = "red")
+}
+x<-c(-.8,.7,.5,.2,.9,-.6)
+y<- c(.4,.8,-.1,-.6,-.7,.3)
+data<-data.frame(x, y)
+
+library(tree)
+pure<-tree.control(6, mincut = 0, minsize = 1, mindev = 0)
+pure_data<-tree(y~x, data = data, control = pure)
+{plot(pure_data)
+text(pure_data)}
+```
+###Theory 8.4.2
+```{r}
+#Boosting using depth-one trees leads to an additive model.
+
+#Boosting works similarly to bagging, except that the trees are grown sequentially or that each tree is grown using infromation trees that are already grown. It also does not involve bootsrap sampling, rather it relies on the original dataset. In boosting with depth-one trees then, the previous that the boosting is based on is simply the prior built tree (just one, depth-one), and this would create an additive model process where the training data for the tree is added to a "shrunken" version of the new tree, and the residuals are updated to create the output of a boosted model. It becomes additive as the data is fitted, slowly -- and boosting is a way to prevent overfitting, through this additive approach. 
+```
+###Theory 8.4.3
+```{r}
+#Gini Index, classification error, and cross-entropy
+p <- seq(0,1,.01)
+gini<-2*p*(1-p)
+class_error<-1-pmax(p,1-p)
+cross_entropy<- -(p*log(p) + (1-p) * log(1-p))
+{matplot(p, cbind(gini, class_error, cross_entropy), col = c("blue", "yellow", "green"))}
+```
+###Theory 8.4.4
+![Tree Diagram and Region Diagram](/home/local/MAC/snelso11/Math-253-Assignment/Topic-8.JPG)
+
+###Theory 8.4.5
+
+```{r}
+#Probability that each sample is red
+prob_red<-c(0.1,0.15,0.2,0.2,0.55,0.6,0.6,0.65,0.7,0.75)
+majority_vote<- mean(prob_red>.5)
+avg_prob<-mean(prob_red)
+print(paste("Probability red: ", majority_vote))
+print(paste("Probability green: ", avg_prob))
+
+```
+###Computing 8.4.12
+```{r}
+library(ISLR)
+data(College)
+train_index<- sample(nrow(College), size = nrow(College)*.5)
+train<- College[train_index,]
+test<-College[-train_index,]
+#Bagging
+library(randomForest)
+set.seed(1011)
+bagging_mod<- randomForest(Apps~., data = train, mtry = ncol(train) - 1, importance = TRUE)
+prediction_bag<-predict(bagging_mod, newdata = test)
+mse_bag<-mean((test$Apps - prediction_bag)^2)
+mse_bag
+
+#Random Forest
+randForest_mod<-randomForest(Apps~., data = train, mtry = ncol(College)/3, importance = TRUE)
+prediction_randForest<- predict(randForest_mod, newdata = test)
+mse_randForest<- mean((test$Apps - prediction_randForest)^2)
+mse_randForest
+
+#Boosting
+library(gbm)
+boosting_mod<- gbm(Apps~., data = train, distribution = "gaussian", n.trees = 5000, interaction.depth = 2)
+prediction_boost<- predict(boosting_mod, newdata = test, n.trees = 5000)
+mse_boosting<- mean((test$Apps - prediction_boost)^2)
+mse_boosting
+
+#Linear Model
+lm_mod<- lm(Apps~., data = train)
+prediction_lm<-predict(lm_mod, data = test)
+mse_lm<-mean((test$Apps - prediction_lm)^2)
+mse_lm
+
+print(paste("MSE for bagging : ", mse_bag))
+print(paste("MSE for random forest: ", mse_randForest))
+print(paste("MSE for boosting: ", mse_boosting))
+print(paste("MSE for linear model: ", mse_lm))
+
+#Out of these four models, the linear model is definitively the worst with a very high mean square error, in comparison. The three tree models produce similar results; however, the bagging method appreas to perform slightly better, and the boosting method slightly worse. 
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
