@@ -1,7 +1,74 @@
 # In-Class Programming Activity, Day 15
 
-Your work goes here ...
+##Overview
+```{r}
+#download.file("http://tiny.cc/dcf/mona.rda", destfile = "mona.rda")
+load("mona.rda")
+X<- t(mona) - mean(mona[])
+X_rand<- jitter(X, factor = 0, amount = 1)
+X_corr<- X_rand %*% chol(var(X))
 
+```
+##Sparse beta
+```{r}
+zero_vect<-rep.int(0,191-16)
+vect1<-c(2,5,-3,-4)
+vect2<- replicate(16,sample(vect1,1, replace = TRUE))
+beta<-sample(c(zero_vect, vect2), 191, replace = TRUE)
+```
+##The output
+```{r}
+Y_pure<-X%*%beta
+Y_real<- jitter(Y_pure, factor = 0, amount = var(Y_pure)*.1)
+```
+
+##Least Squares
+```{r}
+mod_pure<-lm(Y_pure~X)
+beta_hat_pure<-coef(mod_pure)
+beta_hat_pure<-beta_hat_pure[-1]
+mod_real<-lm(Y_real~X)
+beta_hat_real<-coef(mod_real)
+beta_hat_real<-beta_hat_real[-1]
+plot(beta_hat_pure~beta)
+##This says that
+plot(beta_hat_real~beta)
+
+#Would you be able to detect from beta_hat_real that beta is sparse? NO, because
+
+```
+##The lasso estimator
+```{r}
+library(glmnet)
+lasso_mod<-cv.glmnet(X,Y_real,alpha=1)
+beta_lasso<-predict(lasso_mod,type = "coefficients", s = lasso_mod$lambda.min)
+
+```
+
+##Principal components
+```{r}
+sing_vals<-svd(X)$d
+cumulative_sum<-cumsum(sing_vals^2)/sum(sing_vals^2)
+sing_val_rand<-svd(X_rand)$d
+cum_sum_rand<-cumsum(sing_val_rand^2)/sum(sing_val_rand^2)
+sing_val_corr<-svd(X_corr)$d
+cum_sum_corr<-cumsum(sing_val_corr^2)/sum(sing_val_corr^2)
+n99<-which.max(cumulative_sum > .99)
+n99
+n99_rand<-which.max(cum_sum_rand>.99)
+n99_rand
+n99_corr<-which.max(cum_sum_corr>.99)
+n99_corr
+library(pls)
+pcr.fit<-pcr(Y_real~X,scale = TRUE, validation = "CV")
+pcr_r2<-R2(pcr.fit)
+pcr_coef<-coef(mod_pure)
+pcr_coef<-beta_hat_pure[-1]
+n85<-which.max(pcr_coef> .85)
+n85
+
+#There are 5 components need to get an R^2 value of .85
+```
 
 
 ## Test statements
