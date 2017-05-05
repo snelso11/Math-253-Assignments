@@ -35,6 +35,8 @@ one_to_five <- function(hist_data) {
 }
 myHistogram<- function(point,hist_data,fill){
   nbins <- 10
+  min<-dnorm(1000)
+  max<-dnorm(1000)
 min <- min(Galton$height)
 max <- max(Galton$height)
 evenly_spaced <- seq(min, max, (max-min)/(nbins))
