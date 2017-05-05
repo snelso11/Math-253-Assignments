@@ -1,11 +1,80 @@
 # In-Class Programming Activity, Day 17
 
-Your work goes here ...
+
+##Growing and pruning trees
+```{r}
+Cartoon_data <- data.frame(
+x = 1:8,
+y = c(2,5,1,3,8,5,4,6),
+class = c("A", "B", "A", "A", "B", "B", "A", "B")
+)
+library(tree)
+
+```
+
+##Perfectly pure trees
+```{r}
+pure <- tree.control(8, mincut = 0, minsize = 1, mindev = 0)
+```
+##Regression tree
+```{r}
+rtree_pure <- tree(y ~ x, data=Cartoon_data, control = pure)
+{plot(rtree_pure)
+text(rtree_pure)}
+#The output for x=3 is 1
+```
+##Classification tree
+```{r}
+ctree_pure <- tree(class ~ x, data=Cartoon_data, control = pure)
+{plot(ctree_pure)
+text(ctree_pure)}
+#The output for x=7 is A.
+```
+
+##Evaluating the tree
+```{r}
+predict(rtree_pure)
+predict(ctree_pure)
+predict(rtree_pure, newdata = data.frame(x = 3))
+predict(ctree_pure, newdata = data.frame(x = 7))
+```
+##Deviance of each node
+```{r}
+print(rtree_pure)
+print(ctree_pure)
+#label each split according to deviance
+```
+![Deviance of Regression and Classification Trees](/home/local/MAC/snelso11/Math-253-Assignment/IMG_4528.JPG)
 
 
+##Deviance of a tree
+```{r}
+sum(predict(ctree_pure))
+sum(predict(rtree_pure))
+```
+##Pruning the tree
+```{r}
+rtree_5 <- prune.tree(rtree_pure, best = 5)
+ctree_2 <- prune.misclass(ctree_pure, best = 2)
+nterminal<- 2:8
+tree_variance <- deviance(rtree_5, detail = TRUE)
+```
+##Building a real classifier
+```{r}
+library(mosaicData)
+pure_for_cps <- tree.control(nrow(CPS85), mincut = 0, minsize = 1, mindev = 0)
+Sector_classifier <- tree(sector ~ wage + sex + educ + exper,
+data = mosaicData::CPS85,
+control = pure_for_cps)
+classifier_20 <- prune.tree(Sector_classifier, best = 20)
+print(classifier_20)
+#The deviance of the classifier_20 is 2124. 
+{plot(classifier_20)
+text(classifier_20)}
+```
 
 ## Test statements
 
 ```{r}
-scoreActivity::score253(17)
+#scoreActivity::score253(17)
 ```
