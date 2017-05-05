@@ -68,12 +68,16 @@ names(Red)[names(Red)=="X.red."] <- "class"
 names(Blue)<-names(Green)<-names(Red)
 Same_sigma<-rbind(Red,Green)
 Different_sigma<-rbind(Red,Blue)
+
 mod_LDA_one<-lda(class~x+y,data = Same_sigma)
 test_LDA_one<-predict(mod_LDA_one,newdata = Same_sigma)
-mod_QDA_one<-qda(class~x+y,data=Same_sigma)
+
+mod_QDA_two<-qda(class~x+y,data=Same_sigma)
 test_QDA_one<-predict(mod_QDA_one,newdata=Same_sigma)
+
 test_LDA_two<-predict(mod_LDA_one,newdata = Different_sigma)
 test_QDA_two<-predict(mod_QDA_one,newdata=Different_sigma)
+
 table(Same_sigma$class,test_LDA_one$class)
 table(Same_sigma$class,test_QDA_one$class)
 table(Different_sigma$class,test_LDA_two$class)

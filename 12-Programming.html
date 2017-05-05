@@ -177,12 +177,12 @@ test_QDA_two&lt;-predict(mod_QDA_one,newdata=Different_sigma)
 table(Different_sigma$class,test_LDA_two$class)</code></pre>
 <pre><code>##       
 ##        green red
-##   blue    41  59
+##   blue    44  56
 ##   red      0 100</code></pre>
 <pre class="r"><code>table(Different_sigma$class,test_QDA_two$class)</code></pre>
 <pre><code>##       
 ##        green red
-##   blue    45  55
+##   blue    42  58
 ##   red      0 100</code></pre>
 <pre class="r"><code>##The confusion matrices perform the same for both LDA and QDA</code></pre>
 </div>
@@ -207,12 +207,16 @@ names(Red)[names(Red)==&quot;X.red.&quot;] &lt;- &quot;class&quot;
 names(Blue)&lt;-names(Green)&lt;-names(Red)
 Same_sigma&lt;-rbind(Red,Green)
 Different_sigma&lt;-rbind(Red,Blue)
+
 mod_LDA_one&lt;-lda(class~x+y,data = Same_sigma)
 test_LDA_one&lt;-predict(mod_LDA_one,newdata = Same_sigma)
-mod_QDA_one&lt;-qda(class~x+y,data=Same_sigma)
+
+mod_QDA_two&lt;-qda(class~x+y,data=Same_sigma)
 test_QDA_one&lt;-predict(mod_QDA_one,newdata=Same_sigma)
+
 test_LDA_two&lt;-predict(mod_LDA_one,newdata = Different_sigma)
 test_QDA_two&lt;-predict(mod_QDA_one,newdata=Different_sigma)
+
 table(Same_sigma$class,test_LDA_one$class)</code></pre>
 <pre><code>##        
 ##         green   red
@@ -226,12 +230,12 @@ table(Same_sigma$class,test_LDA_one$class)</code></pre>
 <pre class="r"><code>table(Different_sigma$class,test_LDA_two$class)</code></pre>
 <pre><code>##       
 ##        green   red
-##   blue  3942  6058
+##   blue  3920  6080
 ##   red      0 10000</code></pre>
 <pre class="r"><code>table(Different_sigma$class,test_QDA_two$class)</code></pre>
 <pre><code>##       
 ##        green   red
-##   blue  3942  6058
+##   blue  3802  6198
 ##   red      0 10000</code></pre>
 <pre class="r"><code>##With a larger n, for Same_sigma, the QDA and LDA perform the same. For Different_sigma, the QDA is slightly better.</code></pre>
 </div>
@@ -249,7 +253,7 @@ table(Same_sigma$class,test_LDA_one$class)</code></pre>
 ##     0.5)
 ## passed: all(table(Same_sigma$class) == c(n_cases, n_cases))
 ## passed: object &quot;mod_LDA_one&quot; exists
-## FAILED: object &quot;mod_QDA_two&quot; doesn't exist.
+## passed: object &quot;mod_QDA_two&quot; exists
 ## passed: object &quot;test_QDA_one&quot; exists
 ## passed: object &quot;test_LDA_two&quot; exists</code></pre>
 </div>
