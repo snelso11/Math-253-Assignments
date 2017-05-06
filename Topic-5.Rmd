@@ -1,2 +1,5 @@
 # Topic 5 Exercises: Cross-Validation
 
+##Spencer Nelson
+
+###No topic assingment for 5.
