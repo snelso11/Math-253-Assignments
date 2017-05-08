@@ -1,8 +1,66 @@
 # In-Class Programming Activity, Day 16
 
-Your work goes here ...
+# Building your own splint fitter
+##Spencer Nelson
 
+```{r}
+library(ISLR)
+z<-runif(100,0,10)
+my_knots <- function(x=z, k=5){
+  quantile(x, prob = (1:k)/(k+1))
+}
+```
 
+##The basis set
+```{r}
+spline_model_matrix<- function(x, knot_locations){
+  MM <- cbind(1,x,x^2, x^3)
+  for (i in 1:length(knot_locations)){
+    new_vector <- ifelse(x<knot_locations[i],0,(x-knot_locations[i])^3)
+    MM<-cbind(MM, new_vector)
+  }
+  MM
+}
+
+test_set<-spline_model_matrix(z,my_knots(z,6))
+test_set
+```
+
+##Finding the best linear combination
+```{r}
+fit_spline<-function(formula,k=2, data=parent.frame()){
+  y<-eval(formula[[2]], envir=data)
+  x<- eval(formula[[3]], envir=data)
+  knot_locations<- my_knots(x,k)
+  MM<-spline_model_matrix(x, knot_locations)
+  mod<-lm(x~MM-1)
+  res<-list(coef = coef(mod), knots = knot_locations, cov = vcov(mod))
+  class(res)<- "my_spline"
+  return(res)
+}
+
+model<- fit_spline(data = mtcars, k=8, formula = mpg~hp)
+```
+##My spline
+```{r}
+predict_my_spline<- function(model, newx, level = .95, intervals = c("none", "confidence", "prediction")){
+  intervals<- match.arg(intervals)
+  MM<-spline_model_matrix(newx, model$knots)
+  values<- MM%*% model$coef
+  se<- sqrt(rowSums(MM%*% model$cov*MM))
+  
+  if(intervals == "none"){
+    return(values)
+  }
+  else return (NULL)
+}
+
+model_fit<-fit_spline(data=Wage, k=20, formula = wage~age)
+
+plot(wage~age, data=Wage)
+x<-0:1000
+y<- predict_my_spline(model_fit, newx = x)
+```
 
 ## Test statements
 
