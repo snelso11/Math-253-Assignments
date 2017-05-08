@@ -1,2 +1,75 @@
 # Topic 7 Exercises: Nonlinear regression
 
+##Spencer Nelson
+
+###Theory 7.9.3
+```{r}
+#Sketch the esitamted curve between X = -2 and X = 2. Note intercepts, slopes, and other relevant information.
+```
+![Theory 7.9.3](/home/local/MAC/snelso11/Math-253-Assignment/IMG_4535.JPG)
+
+
+###Theory 7.9.4
+```{r}
+#Sketch the estiamted curve between X = -2, and X = 2. Note the intercepts, slopes, and other relevant information.
+
+```
+![Theory 7.9.4](/home/local/MAC/snelso11/Math-253-Assignment/IMG_4537.JPG)
+
+
+
+
+###Theory 7.9.5
+```{r}
+#A. As lambda approachs infinity, the smoother spline (hat g2) will have the smaller training RSS because it will be more flexible (as it is a higher order polynomial)
+
+#B. As lambda approaches infinity, it is likely that the less smooth spline (hat g1) will have the smaller testing RSS because it will likely overfit the data (too flexible, perhaps).
+
+#C. When lambda is zero, both hat g1 and hat g2 will have the same training and testing RSS because there is no smoothing parameter.
+
+```
+###Computing 7.9.11
+```{r}
+#A. Generate a response Y and two Predictors with X1 and X2, with n = 100.
+library(gbm)
+y<- rnorm(100)*10
+x1<- rnorm(100)*10
+x2<-rnorm(100)*10
+#B. Initialize beta1 to take on value of choice.
+beta1<- 10
+#C. Keep beta1 fixed, fit the model
+a<- y-beta1 *x1
+beta2<- lm(a~x2)$coef [2]
+#D. Keep beta2 fixed, fit the model
+a<- y-beta2*x2
+beta1<-lm(a~x1)$coef[2]
+#E. for loop to repead c and d
+beta_values<-matrix(NA, nrow = 1000,ncol = 3)
+for(i in 1:1000){
+  a<- y-beta1*x1
+  beta2<-lm(a~x2)$coef[2]
+  
+  a<-y-beta2*x2
+  fit<-lm(a~x1)
+  beta1<-fit$coef[2]
+  
+  beta0<- fit$coef[1]
+  
+  beta_values[i,1]<- beta0
+  beta_values[i,2]<- beta1
+  beta_values[i,3]<- beta2
+}
+#F. multiple linear regression to predict Y using X1 and X2. Usethe abline() function to overlay those multiple linear regressioncoefficient estimates on the plot obtained in (e).
+
+{plot(1:1000,ylim = c(-1,1))
+lines(beta_values[,1], col = "red")
+lines(beta_values[,2], col = "green")
+lines(beta_values[,3], col = "blue")
+
+lm_mod<- lm(y~x1+x2)
+coef(lm_mod)
+abline(h = lm_mod$coef[1], lty = "dotted", lwd = 3, col = "orange")
+abline(h = lm_mod$coef[2], lty = "dotted", lwd = 3, col = "orange")
+abline(h = lm_mod$coef[3], lty = "dotted", lwd = 3, col = "orange")}
+
+```
